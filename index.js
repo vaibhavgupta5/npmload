@@ -171,20 +171,26 @@ User prompt: "${prompt}"
 
 async function runCommandsSequentially(commands, folderName) {
   let modifiedCommands = commands;
+  let shouldChangeToFolder = false;
+  
   if (folderName && folderName !== ".") {
     modifiedCommands = commands.map(cmd => {
+      // Handle create-next-app and similar commands that accept a directory argument
       if (cmd.includes("create-next-app") && cmd.includes(".")) {
+        shouldChangeToFolder = true;
         return cmd.replace(/\s+\.\s*$/, ` ${folderName}`);
       }
+      // Handle other create commands
       if (cmd.includes("create-") && cmd.includes(".")) {
+        shouldChangeToFolder = true;
         return cmd.replace(/\s+\.\s*$/, ` ${folderName}`);
       }
       return cmd;
     });
   }
 
-  const shouldCreateFolder = folderName && folderName !== "." && 
-    !commands.some(cmd => cmd.includes("create-") && cmd.includes("."));
+  // Only manually create folder if no create command will handle it
+  const shouldCreateFolder = folderName && folderName !== "." && !shouldChangeToFolder;
 
   if (shouldCreateFolder) {
     spinner.start(`Creating folder: ${folderName}`);
@@ -227,6 +233,15 @@ async function runCommandsSequentially(commands, folderName) {
         
         console.log(chalk.gray('─'.repeat(50)));
         console.log(chalk.green(`✅ ${progress} Completed: ${cmd} (${percentage}% done)`));
+        
+        if (shouldChangeToFolder && i === 0 && (cmd.includes("create-next-app") || cmd.includes("create-"))) {
+          try {
+            process.chdir(folderName);
+            console.log(chalk.blue(`📁 Changed to directory: ${folderName}`));
+          } catch (err) {
+            console.log(chalk.yellow(`⚠️  Could not change to directory: ${folderName}`));
+          }
+        }
       } else {
         await execa(cmdName, args, { stdio: "inherit" });
         spinner.succeed(`✅ ${progress} Done: ${cmd} (${percentage}% done)`);
