@@ -1,0 +1,36 @@
+{
+  "name": "npmload-cli",
+  "version": "1.0.2",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "npm",
+    "cli",
+    "node",
+    "installer",
+    "AI"
+  ],
+  "bin": {
+    "npmload": "./index.js"
+  },
+  "author": "vaibhavgupta5",
+  "license": "MIT",
+  "type": "module",
+  "description": "AI-powered npm installer CLI",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "boxen": "^8.0.1",
+    "chalk": "^5.6.2",
+    "dotenv": "^17.2.3",
+    "execa": "^9.6.0",
+    "figlet": "^1.9.3",
+    "gradient-string": "^3.0.0",
+    "inquirer": "^12.9.6",
+    "ora": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
